@@ -12,7 +12,7 @@ class Number extends Model
 
     protected $fillable = [
         'number',
-        'column',
-        'row',
+        'colonna',
+        'riga',
     ];
 }

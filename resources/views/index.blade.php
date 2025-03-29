@@ -20,11 +20,20 @@
 
         {{-- MOSTRA PUNTATA --}}
         <div class="row text-center">
-            @if ($count)
+            @foreach ($columnCounts as $column)
                 <div class="col border border-2 border-dark p-5 mb-5">
-                    <p>{{ $count }}</p>
+
+                    <p>Column {{ $column['column'] }} Count</p>
+                    <p>{{ $column['count'] }}</p>
                 </div>
-            @endif
+            @endforeach
+            @foreach ($rowCounts as $row)
+                <div class="col border border-2 border-dark p-5 mb-5">
+                    <p>Row {{ $row['row'] }} Count</p>
+                    <p>{{ $row['count'] }}</p>
+                </div>
+            @endforeach
+
         </div>
 
 

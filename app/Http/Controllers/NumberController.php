@@ -6,18 +6,30 @@ use App\Http\Requests\StoreNumberRequest;
 use App\Models\Number;
 use App\Http\Requests\UpdateNumberRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Fecades\Request;
 
 
 class NumberController extends Controller
 {
     /**
-     * Count last estraction
+     * Count last column estraction
      */
-    public function count($column)
+    public function countColumn($column)
     {
-        $lastNumber = Number::all()->orderBy('created_at', 'DESC')->first();
-        $lastColumn = Number::find()->where('column', $column)->take(1);
-        $count = $lastNumber - $lastColumn;
+        $lastNumber = Number::all()->sortByDesc('created_at')->first();
+        $lastColumn = Number::all()->where('colonna', '=', $column)->sortByDesc('created_at')->first();
+        $count = $lastNumber->id - $lastColumn->id;
+        return $count;
+    }
+
+    /**
+     * Count last row estraction
+     */
+    public function countRow($row)
+    {
+        $lastNumber = Number::all()->sortByDesc('created_at')->first();
+        $lastRow = Number::all()->where('riga', '=', $row)->sortByDesc('created_at')->first();
+        $count = $lastNumber->id - $lastRow->id;
         return $count;
     }
 
@@ -26,11 +38,20 @@ class NumberController extends Controller
      */
     public function index()
     {
-        $count = $this->count(1);
         //
-        $numbers =  Number::all();
 
-        return view('index', ['numbers' => $numbers, 'count' => $count]);
+        $column1count = $this->countColumn(1);
+        $column2count = $this->countColumn(2);
+        $column3count = $this->countColumn(3);
+
+        $row1count = $this->countRow(1);
+        $row2count = $this->countRow(2);
+        $row3count = $this->countRow(3);
+
+        $columnCounts = [['column' => 1, 'count' => $column1count], ['column' => 2, 'count' => $column2count], ['column' => 3, 'count' => $column3count]];
+        $rowCounts = [['row' => 1, 'count' => $row1count], ['row' => 2, 'count' => $row2count], ['row' => 3, 'count' => $row3count]];
+        $numbers =  Number::all();
+        return view('index', ['numbers' => $numbers, 'columnCounts' => $columnCounts, 'rowCounts' => $rowCounts]);
     }
 
     /**
@@ -63,8 +84,8 @@ class NumberController extends Controller
             if (in_array($lastNumber, $column1) && in_array($lastNumber, $row1)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 1,
-                    'row' => 1,
+                    'colonna' => 1,
+                    'riga' => 1,
                 ];
                 Number::create($number);
                 $numbers =  Number::all();
@@ -72,8 +93,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column1) && in_array($lastNumber, $row2)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 1,
-                    'row' => 2,
+                    'colonna' => 1,
+                    'riga' => 2,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -83,8 +104,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column1) && in_array($lastNumber, $row3)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 1,
-                    'row' => 3,
+                    'colonna' => 1,
+                    'riga' => 3,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -94,8 +115,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column2) && in_array($lastNumber, $row1)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 2,
-                    'row' => 1,
+                    'colonna' => 2,
+                    'riga' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -105,8 +126,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column2) && in_array($lastNumber, $row2)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 2,
-                    'row' => 2,
+                    'colonna' => 2,
+                    'riga' => 2,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -116,8 +137,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column2) && in_array($lastNumber, $row3)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 2,
-                    'row' => 3,
+                    'colonna' => 2,
+                    'riga' => 3,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -127,8 +148,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column3) && in_array($lastNumber, $row1)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 3,
-                    'row' => 1,
+                    'colonna' => 3,
+                    'riga' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -138,8 +159,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column3) && in_array($lastNumber, $row2)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 3,
-                    'row' => 2,
+                    'colonna' => 3,
+                    'riga' => 2,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -149,8 +170,8 @@ class NumberController extends Controller
             } elseif (in_array($lastNumber, $column3) && in_array($lastNumber, $row3)) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 3,
-                    'row' => 3,
+                    'colonna' => 3,
+                    'riga' => 3,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -160,15 +181,14 @@ class NumberController extends Controller
             } elseif ($lastNumber === 0) {
                 $number = [
                     'number' => $request->input('lastNumber'),
-                    'column' => 0,
-                    'row' => 0,
+                    'colonna' => 0,
+                    'riga' => 0,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
                 Number::create($number);
-                $numbers =  Number::all();
 
-                return view('index', ['numbers' => $numbers]);
+                return $this->index();
             }
         }
     }
@@ -205,7 +225,6 @@ class NumberController extends Controller
 
         DB::table("numbers")->orderBy("created_at", "DESC")->take(1)->delete();
 
-        $numbers = Number::all();
-        return view('index', ['numbers' => $numbers]);
+        return $this->index();
     }
 }
